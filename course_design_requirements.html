@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>电子科技大学·智能嵌入式及相关方向课程设计要求全景汇总</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm 12mm 10mm;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+    color: #1e293b;
+    background-color: #ffffff;
+    line-height: 1.45;
+    font-size: 9.5pt;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Header styling */
+  .doc-header {
+    border-bottom: 2.5px solid #1e40af;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .doc-title-group h1 {
+    font-size: 16pt;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+    font-weight: 700;
+  }
+  .doc-title-group .sub {
+    font-size: 9.5pt;
+    color: #1e40af;
+    font-weight: 600;
+    margin: 0;
+  }
+  .doc-meta {
+    text-align: right;
+    font-size: 8pt;
+    color: #64748b;
+    line-height: 1.35;
+  }
+  .badge-tag {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 7.5pt;
+    font-weight: 600;
+  }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-amber { background: #fef3c7; color: #b45309; }
+  .badge-purple { background: #f3e8ff; color: #6b21a8; }
+  .badge-red { background: #fee2e2; color: #b91c1c; }
+
+  /* Section styling */
+  .section-block {
+    margin-bottom: 14px;
+    page-break-inside: avoid;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    padding-bottom: 3px;
+    border-bottom: 1.5px solid #e2e8f0;
+  }
+  .section-header h2 {
+    font-size: 11pt;
+    color: #0f172a;
+    margin: 0;
+    font-weight: 700;
+  }
+  .section-header .section-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: #1e40af;
+    color: #ffffff;
+    border-radius: 4px;
+    font-size: 8.5pt;
+    font-weight: bold;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 6px;
+    font-size: 8.5pt;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 5.5px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 700;
+  }
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+  .table-highlight {
+    background-color: #eff6ff !important;
+  }
+
+  /* Callout boxes */
+  .callout {
+    border-radius: 5px;
+    padding: 7px 10px;
+    margin-top: 5px;
+    margin-bottom: 6px;
+    font-size: 8pt;
+    line-height: 1.4;
+  }
+  .callout-info {
+    background: #f0fdf4;
+    border-left: 3.5px solid #16a34a;
+    color: #14532d;
+  }
+  .callout-warn {
+    background: #fffbeb;
+    border-left: 3.5px solid #f59e0b;
+    color: #78350f;
+  }
+  .callout-purple {
+    background: #faf5ff;
+    border-left: 3.5px solid #9333ea;
+    color: #581c87;
+  }
+  .callout-blue {
+    background: #eff6ff;
+    border-left: 3.5px solid #2563eb;
+    color: #1e3a8a;
+  }
+
+  ul, ol {
+    margin: 2px 0;
+    padding-left: 16px;
+  }
+  li {
+    margin-bottom: 1.5px;
+  }
+  strong {
+    color: #0f172a;
+  }
+  .code-text {
+    font-family: Consolas, "Fira Code", Monaco, monospace;
+    background: #f1f5f9;
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-size: 8pt;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="doc-title-group">
+      <div class="sub">电子科技大学（UESTC）· 课程设计综合指南</div>
+      <h1>智能嵌入式及相关方向课程设计要求全景汇总</h1>
+    </div>
+    <div class="doc-meta">
+      <div><strong>整理范围：</strong>工作区三大课程设计方向</div>
+      <div><strong>硬件载体：</strong>树莓派 3B+ (1GB RAM) / PC / 传感器</div>
+      <div><strong>制作日期：</strong>2026 年 9 月</div>
+    </div>
+  </div>
+
+  <!-- Part 1: 横向总览 -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-icon">1</span>
+      <h2>三大方向课设核心信息横向总览对比</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 14%;">比较维度</th>
+          <th style="width: 29%;">方向一：树莓派智能嵌入式课设</th>
+          <th style="width: 29%;">方向二：机器学习初步与实践 (CV/ML)</th>
+          <th style="width: 28%;">方向三：智能控制课设 (杨鍊老师)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>所属课程与学院</strong></td>
+          <td>《智能嵌入式系统》</td>
+          <td>《机器学习初步与实践》</td>
+          <td>《智能控制》（信通院）</td>
+        </tr>
+        <tr>
+          <td><strong>任务架构与选题</strong></td>
+          <td><span class="badge-tag badge-red">必做高阶 1 个</span> + <span class="badge-tag badge-blue">基础套A/B二选一</span></td>
+          <td>命题 3 选 1（手写识别 / 情感分类 / 其它自选）</td>
+          <td>应用 2 选 1（健康管理 / 批判思维教育）或自拟</td>
+        </tr>
+        <tr>
+          <td><strong>硬件与平台环境</strong></td>
+          <td><strong>必须基于树莓派硬件板卡</strong>（3B+等板端运行）</td>
+          <td><strong>不限平台与语言</strong>（PC 端 Python / Matlab 仿真均可）</td>
+          <td><strong>嵌入式开发套件</strong> + 多传感器（相机/雷达/音频）</td>
+        </tr>
+        <tr>
+          <td><strong>关键时间节点</strong></td>
+          <td>
+            • <strong>周三前</strong>：课程群填报选题<br>
+            • <strong>第 18 周左右</strong>：课程作品实物展示<br>
+            • <strong>期末前</strong>：完成答辩
+          </td>
+          <td>
+            • <strong style="color:#b91c1c;">2026 年 10 月 17 日前</strong>：慕课上传全部成果<br>
+            • 上课时间现场 5 分钟汇报 + 3 分钟答辩
+          </td>
+          <td>
+            • 提交项目完整技术方案设计书<br>
+            • 准备 PPT 参加答辩与质辩
+          </td>
+        </tr>
+        <tr>
+          <td><strong>成果提交物规范</strong></td>
+          <td>课程设计技术报告 + 实物现场效果演示</td>
+          <td>
+            压缩包命名：<span class="code-text">2026Fall-ML-组序号-选题.zip</span><br>
+            内含：①Word报告 ②PPT ③Excel指标 ④源码
+          </td>
+          <td>整体系统架构图 + 软硬件关键技术方案 + PPT</td>
+        </tr>
+        <tr>
+          <td><strong>考核容错机制</strong></td>
+          <td><strong>允许失败</strong>，需详述原因分析与所做努力，重在工作量</td>
+          <td>重在指标量化对比、模型选择合理性与现场 Live Demo</td>
+          <td>重在控制工程系统性、算法匹配性与多模态交互闭环</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Part 2: 树莓派智能嵌入式课设 -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-icon">2</span>
+      <h2>方向一：树莓派智能嵌入式课设细化要求（高阶 + 基础套A/B）</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 14%;">模块分类</th>
+          <th style="width: 20%;">子方向 / 题目</th>
+          <th style="width: 38%;">具体任务内容</th>
+          <th style="width: 28%;">关键考核指标与硬性限制</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="table-highlight">
+          <td><span class="badge-tag badge-red">高阶（必做）</span></td>
+          <td><strong>算法板端移植</strong><br><em>(任选 1 项)</em></td>
+          <td>
+            • 机器学习 / 姿态识别 / 人工智能目标检测<br>
+            • WiFi 非合作式运动检测 / 其他自拟前沿算法<br>
+            • <strong>要求</strong>：将算法或其核心计算模块部署在板端运行，建议结合外设形成完整作品
+          </td>
+          <td>
+            • 难点考察：ARM Linux 环境配置（OpenCV / Python / OpenVINO / TFLite）<br>
+            • 工具链选择：自举开发 vs 交叉编译<br>
+            • 算力划分：板端驱动与推理 vs 上位机协同
+          </td>
+        </tr>
+        <tr>
+          <td rowspan="2"><span class="badge-tag badge-blue">基础：套 A</span><br><em>(底层与驱动<br>两项均必做)</em></td>
+          <td><strong>1. 系统安装</strong><br><em>(必做)</em></td>
+          <td>
+            • 树莓派上安装 Win10 (ARM) / OpenWRT / openEuler (配置 OpenCV 或 TensorFlow) / Matlab 等不同系统
+          </td>
+          <td>
+            • <strong style="color:#b91c1c;">硬性指标</strong>：必须安装过<strong>不少于 2 种不同版本</strong>的系统<br>
+            • <strong>限制</strong>：同一系列（如 Ubuntu 不同版本）仅算 1 种
+          </td>
+        </tr>
+        <tr>
+          <td><strong>2. 接口应用</strong><br><em>(必做)</em></td>
+          <td>
+            • 利用 USB 口、UART 串口、WiFi 或蓝牙接口连接摄像头、传感器等外设，将数据通过网络传送到 PC 机显示
+          </td>
+          <td>
+            • <strong>有效性判定</strong>：需证明数据真实通信并可视化<br>
+            • <strong style="color:#b91c1c;">无效操作</strong>：单纯读写 U 盘不算，单纯在 /dev 看到设备名不算
+          </td>
+        </tr>
+        <tr>
+          <td rowspan="2"><span class="badge-tag badge-green">基础：套 B</span><br><em>(网络与应用<br>各选 1 项)</em></td>
+          <td><strong>1. 系统应用</strong><br><em>(3 选 1)</em></td>
+          <td>
+            <strong>① 防火墙与路由</strong>：Pi 设为防火墙+路由(+热点)+NAT，手机连WiFi，Pi网线连校园网并过滤访问；<br>
+            <strong>② Web 服务器</strong>：搭建 Web 服务并设计美观网页，展示个人大作业或课设报告；<br>
+            <strong>③ FTP 服务器</strong>：配置 FTP 服务作为移动文件存储站。
+          </td>
+          <td>
+            • 强调网络服务链路畅通性与内网穿透/访问能力；<br>
+            • Web 服务要求前端界面排版美观大方。
+          </td>
+        </tr>
+        <tr>
+          <td><strong>2. 软件开发</strong><br><em>(3 选 1)</em></td>
+          <td>
+            <strong>① 无间道发报机</strong>：利用 GPIO 开关/短接发报，板端识别后通过网络发到 PC/手机翻译成文字；<br>
+            <strong>② 魔幻键盘</strong>：Pi 外接键盘，网络连接 PC，重映射键位实现趣味交互效果；<br>
+            <strong>③ 官方自拟</strong>：参考 www.raspberrypi.org 自拟软硬件交互应用。
+          </td>
+          <td>
+            • 突出软硬件联动与网络通信闭环；<br>
+            • 鼓励打造趣味性高、交互直观的交互原型。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-warn">
+      <strong>组织与评分要点：</strong>2~3 人一组，华为 Atlas200 可不做。不要求最终 100% 完美成功，但必须有足够的工作量；若遇到难以逾越的技术障碍，需在报告中详细阐明失败机理、排查定位过程与尝试过的解决思路。
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- Part 3: 机器学习初步与实践 -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-icon">3</span>
+      <h2>方向二：《机器学习初步与实践》课设规范 (CV / ML)</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 20%;">课题选项</th>
+          <th style="width: 48%;">核心设计任务与指标</th>
+          <th style="width: 32%;">算法模型推荐与实现路径</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>题目 1：字母与数字识别</strong><br><span class="badge-tag badge-blue">经典视觉</span></td>
+          <td>
+            • <strong>手写样本</strong>：在纸上手写 0~9 数字与 26 个英文字母（不区分大小写），拍摄制作成样本图片；<br>
+            • <strong>输入输出</strong>：输入计算机，程序能够自动多分类识别并输出正确字符；<br>
+            • <strong>规格要求</strong>：图片需归一化为固定分辨率（如 <span class="code-text">50×50</span> 或 <span class="code-text">32×32</span>）。
+          </td>
+          <td>
+            • 逻辑回归多分类（Softmax）<br>
+            • 多层感知机（MLP）/ 经典 LeNet-5 CNN<br>
+            • SVM 搭配 HOG 特征提取
+          </td>
+        </tr>
+        <tr>
+          <td><strong>题目 2：文本情感识别</strong><br><span class="badge-tag badge-purple">NLP 文本分类</span></td>
+          <td>
+            • <strong>输入数据</strong>：输入一段中文文字；<br>
+            • <strong>判别目标</strong>：自动分析并判别情感倾向，类别固定为 3 类：<strong>积极、消极、中性</strong>。
+          </td>
+          <td>
+            • TF-IDF / 词袋模型 + 朴素贝叶斯 / SVM<br>
+            • Word2Vec / FastText + LSTM / BiLSTM<br>
+            • 轻量级中文预训练模型（如 RoBERTa-Tiny）
+          </td>
+        </tr>
+        <tr>
+          <td><strong>题目 3：其他自选题目</strong><br><span class="badge-tag badge-green">灵活扩展</span></td>
+          <td>
+            • 可选方向：歌曲音乐风格分类、人脸表情识别、字符验证码识别、股票走势预测、环境温度时序预测等。
+          </td>
+          <td>
+            • 需自行构建规范的训练集、验证集与测试集，给出完整的 Confusion Matrix 与准确率/F1 指标。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-info">
+      <strong>提交与答辩规范：</strong>
+      <strong>截止日期：2026 年 10 月 17 日前</strong>上传成电慕课。压缩包命名必须为 <span class="code-text">2026Fall-ML-组序号-选题名称.zip</span>，内含：①课程设计报告(<span class="code-text">*.doc</span>)、②汇报PPT(<span class="code-text">*.PPT</span>)、③课程设计检查指标(<span class="code-text">*.xlsx</span>)、④程序工程源码。答辩每组汇报 5 分钟 + 问答 3 分钟，组长介绍分工，<strong>现场必须进行运行演示（Live Demo）或播放录制视频</strong>。
+    </div>
+  </div>
+
+  <!-- Part 4: 智能控制课设 -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-icon">4</span>
+      <h2>方向三：《智能控制》课设要求（信通院·杨鍊老师）</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 25%;">课题方向</th>
+          <th style="width: 45%;">系统核心功能指标</th>
+          <th style="width: 30%;">关键技术与硬件配套</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>应用一：智能健康管理系统</strong><br><span class="badge-tag badge-blue">健康感知与控制</span></td>
+          <td>
+            <strong>(1) 运动姿态识别与纠错</strong>：基于嵌入式平台连接传感器（摄像头或毫米波雷达），实时识别运动姿态，记录健身动作次数，并实现<strong>动作错误纠正</strong>提醒；<br>
+            <strong>(2) 饮食热量监控与闭环推荐</strong>：监管每日摄入食物种类及分量，分析摄入 vs 消耗能量平衡，智能生成饮食与运动定制推荐方案。
+          </td>
+          <td>
+            • 嵌入式主控 + USB/CSI 相机 / 毫米波雷达<br>
+            • 骨骼关键点检测（MediaPipe Pose / 轻量 YOLO-Pose）<br>
+            • 动作夹角几何判别算法 + 热量数据库匹配
+          </td>
+        </tr>
+        <tr>
+          <td><strong>应用二：大模型批判式思维机器人</strong><br><span class="badge-tag badge-purple">具身智能教育</span></td>
+          <td>
+            <strong>(1) 语音自然对话</strong>：嵌入式端实现语音采集与识别（ASR），完成自然口语问答交互；<br>
+            <strong>(2) 启发式思维训练</strong>：利用大语言模型（LLM）对用户语音进行智能解析，培养批判性思维，后台构建训练画像；<br>
+            <strong>(3) 表情专注度感知</strong>：实时分析人脸表情与专注度状态，统计数据同步推送至家长手机端。
+          </td>
+          <td>
+            • 麦克风阵列 + 扬声器 + 显示屏 + 摄像头<br>
+            • 嵌入式端 VAD 语音断句 + ASR + TTS<br>
+            • 大模型 API 结构化 Prompt 调优 + 面部表情识别
+          </td>
+        </tr>
+        <tr>
+          <td><strong>选项三：自拟智能控制项目</strong><br><span class="badge-tag badge-green">完整工程创新</span></td>
+          <td>
+            • 自主设计一个与智能控制有关的完整工程项目；<br>
+            • 明确拟解决的核心问题、系统工作闭环与控制指标。
+          </td>
+          <td>
+            • 输出完整的硬件架构拓扑、控制软件流程图与核心控制/感知算法方案。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-blue">
+      <strong>交付与答辩要素：</strong>须提交完整项目技术方案书（包含整体系统框架、硬件原理与选型、软件流程图、核心算法介绍）并准备 PPT 现场答辩。
+    </div>
+  </div>
+
+  <!-- Part 5: 跨课设联动建议与树莓派3B+选型 -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-icon">5</span>
+      <h2>💡 跨课设高效复用策略与树莓派 3B+ (1GB RAM) 适配建议</h2>
+    </div>
+    <div class="callout callout-purple">
+      <strong>“一石三鸟”多课设高效联动方案：</strong>
+      <ul>
+        <li><strong>姿态/视觉动作识别主线：</strong>以<strong>“人体姿态检测与动作规范性分析”</strong>为核心技术内核——在【树莓派课设】中作为高阶必做任务（轻量 MediaPipe Pose 或 TFLite 跑在 3B+ 上，USB 相机抓流）；在【智能控制课设】中自然扩展为“智能健康管理系统”的动作识别与纠正功能；在【机器学习课设】中则可对应“手部手势识别”或“面部表情识别”子模块，极大减少多门课的重复开发成本！</li>
+        <li><strong>树莓派 3B+ 资源约束避坑指南：</strong>3B+ 仅有 1GB 内存，千万避免在板上编译大型深度学习框架或跑原生 YOLOv8；推荐采用 <strong>TFLite / ONNX Runtime</strong> 配合量化模型（INT8），或采用“树莓派采集数据推流 + PC/服务器轻量推理 + 树莓派受控执行”的分布式边缘计算架构；基础系统建议选用官方 64-bit Lite 系统或 openEuler Embedded。</li>
+        <li><strong>里程碑时间线推进策略：</strong>
+          <strong>第 1 阶段（本周内）</strong>：报送树莓派课设选题组合（如：高阶姿态识别 + 基础套A底层系统）；<br>
+          <strong>第 2 阶段（10月17日前）</strong>：率先冲刺《机器学习初步与实践》慕课提交与答辩；<br>
+          <strong>第 3 阶段（10月下旬~18周）</strong>：将核心算法迁移部署至树莓派 3B+ 硬件，完成软硬件联调与展示答辩。
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</body>
+</html>

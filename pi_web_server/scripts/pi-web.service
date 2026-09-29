@@ -1,0 +1,16 @@
+[Unit]
+Description=Raspberry Pi Smart Embedded Web Dashboard
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/pi/pi_web_server
+ExecStart=/usr/bin/python3 /home/pi/pi_web_server/app.py
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,40 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment
+venv/
+.venv/
+env/
+.env/
+
+# Distribution & packaging
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Redundant temporary models in workspace root
+/*.onnx
+/*.tflite
+/*.pt
+
+# Unused tflite binaries
+tflite_runtime/
+pi_web_server/tflite_runtime/
+pi_web_server/models/*.whl
+pi_web_server/models/*.tflite
+pi_web_server/models/yolov8n-pose-192.onnx
+
+# Logs & temp files
+*.log
+/tmp/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
