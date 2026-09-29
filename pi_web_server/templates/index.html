@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UESTC 智能嵌入式物联网控制台 - 树莓派 3B+</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+
+  <!-- 顶部导航栏 -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-logo">π</div>
+      <div>
+        <div class="brand-title">智能嵌入式系统控制台</div>
+        <div class="brand-subtitle">电子科技大学 · 树莓派 3B+ 物联网终端</div>
+      </div>
+    </div>
+    <div class="nav-badges">
+      <div class="badge badge-green" id="server-status-badge">
+        <span class="badge-pulse"></span>
+        <span>连接就绪</span>
+      </div>
+      <div class="badge badge-blue" id="uptime-badge">
+        运行: 初始化中...
+      </div>
+    </div>
+  </header>
+
+  <!-- 主体内容 -->
+  <main class="container">
+
+    <!-- 课设信息介绍条 -->
+    <section class="project-banner">
+      <div class="banner-left">
+        <h2>基于树莓派的智能嵌入式综合设计平台</h2>
+        <p>支持板载 AP 独立热点直连、硬件系统级指标监测、外设多模态采集与软件发报交互。</p>
+      </div>
+      <div class="banner-right">
+        <span class="tag-pill">基础套 B: Web服务器</span>
+        <span class="tag-pill">基础套 B: AP热点与路由</span>
+        <span class="tag-pill">基础套 B: 无间道发报机</span>
+        <span class="tag-pill">高阶预留: 视觉AI流</span>
+      </div>
+    </section>
+
+    <!-- 硬件指标 4 格卡片 -->
+    <section class="metrics-grid">
+      <!-- CPU 卡片 -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">CPU 负荷率</span>
+          <span style="font-size: 16px;">⚡</span>
+        </div>
+        <div class="card-value" id="cpu-val">0.0%</div>
+        <div class="card-sub" id="cpu-sub">4 核心 @ 1400 MHz</div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill fill-blue" id="cpu-bar" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- 温度卡片 -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">SoC 核心温度</span>
+          <span style="font-size: 16px;">🌡️</span>
+        </div>
+        <div class="card-value" id="temp-val">-- °C</div>
+        <div class="card-sub" id="temp-sub">检测中...</div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill fill-green" id="temp-bar" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- 内存卡片 -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">系统内存 (1GB LPDDR2)</span>
+          <span style="font-size: 16px;">🧠</span>
+        </div>
+        <div class="card-value" id="mem-val">0.0%</div>
+        <div class="card-sub" id="mem-sub">计算中...</div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill fill-blue" id="mem-bar" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- 存储卡片 -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">TF 卡存储 (16GB)</span>
+          <span style="font-size: 16px;">💾</span>
+        </div>
+        <div class="card-value" id="disk-val">0.0%</div>
+        <div class="card-sub" id="disk-sub">计算中...</div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill fill-blue" id="disk-bar" style="width: 0%;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 主交互区：左推流 + 右控制 -->
+    <section class="main-grid">
+
+      <!-- 左：摄像头实时视频流 (MoveNet/YOLOv8 骨骼姿态识别与可视化) -->
+      <div class="card camera-card">
+        <div class="card-header">
+          <span class="card-title">外设视觉通道 (骨骼姿态追踪)</span>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <button class="btn btn-outline" id="flow-toggle-btn" onclick="toggleFlowMode()" style="padding: 4px 10px; font-size: 11px; border-color: #38bdf8; color: #38bdf8;">
+              ⚡ 极速跟随: 开启
+            </button>
+            <button class="btn btn-outline" id="pose-toggle-btn" onclick="togglePose()" style="padding: 4px 10px; font-size: 11px; border-color: var(--accent-green); color: var(--accent-green);">
+              🦴 骨骼追踪: 开启
+            </button>
+            <span class="live-pill"><span class="badge-pulse" style="background:#fff;"></span> LIVE</span>
+          </div>
+        </div>
+        <div class="video-container">
+          <img src="/api/camera/stream" alt="Live Stream" loading="lazy">
+        </div>
+        <div style="margin-top: 12px; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); flex-wrap: wrap; gap: 6px;">
+          <span id="pose-status-text">AI 架构: YOLOv8-Pose + LK 稀疏光流 (17 关节点)</span>
+          <span id="pose-infer-badge" style="color: var(--accent-green);">感知延迟: &lt;30ms | AI 周期: 228ms</span>
+        </div>
+      </div>
+
+      <!-- 右：双模式软硬件交互卡片 -->
+      <div class="control-tabs">
+
+        <!-- 卡片 1: GPIO 硬件控制 (满足接口应用) -->
+        <div class="sub-panel">
+          <div class="panel-title">
+            <span>GPIO 硬件联动测试</span>
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">Pin 18 (BCM)</span>
+          </div>
+          <div class="led-indicator">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="led-bulb" id="led-bulb"></div>
+              <span style="font-size: 13px;">板载/外接 LED 状态</span>
+            </div>
+            <button class="btn btn-primary" id="led-toggle-btn" onclick="toggleLed()">
+              点亮 LED 绿灯
+            </button>
+          </div>
+        </div>
+
+        <!-- 卡片 2: 无间道发报机 (满足基础套 B 软件开发 1) -->
+        <div class="sub-panel">
+          <div class="panel-title">
+            <span>无间道发报机 · 摩斯电码解密终端</span>
+            <span style="font-size: 11px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 6px; border-radius: 4px;">
+              基础套 B 专属
+            </span>
+          </div>
+          
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+            信号输入编码（支持点击电键或键盘空格键敲击）：
+          </div>
+          <div class="morse-input-box" id="morse-input">等待输入...</div>
+
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+            PC/移动端实时翻译明文：
+          </div>
+          <div class="morse-decoded-box" id="morse-output">无信号</div>
+
+          <div class="morse-keys">
+            <button class="btn" onclick="appendMorse('.')">短按 (· 点)</button>
+            <button class="btn" onclick="appendMorse('-')">长按 (- 划)</button>
+            <button class="btn" onclick="appendMorse(' ')">字间隔 (空格)</button>
+            <button class="btn" onclick="appendMorse(' / ')">词间隔 (/)</button>
+            <button class="btn btn-red" onclick="clearMorse()">清空重置</button>
+          </div>
+
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+            快捷电文：
+            <a href="javascript:void(0)" onclick="sendPresetMorse('... --- ...')" style="color:#38bdf8; margin-right:8px;">[SOS]</a>
+            <a href="javascript:void(0)" onclick="sendPresetMorse('..- . ... - -.-.')" style="color:#38bdf8; margin-right:8px;">[UESTC]</a>
+            <a href="javascript:void(0)" onclick="sendPresetMorse('.... . .-.. .-.. --- / .--. ..')" style="color:#38bdf8;">[HELLO PI]</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 网络与热点拓扑信息 (满足套 B 网络/热点指标) -->
+    <section class="network-card">
+      <div class="card-header">
+        <span class="card-title">独立 AP 热点与网络拓扑参数</span>
+        <span class="tag-pill" style="color:#6ee7b7;border-color:rgba(16,185,129,0.3);">热点激活状态</span>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted);">
+        手机或电脑搜索并连接下述 Wi-Fi 热点，即可脱离外部网络与路由器限制，在答辩现场独立演示控制台各项功能。
+      </p>
+
+      <div class="net-info-grid">
+        <div class="net-info-item">
+          <div class="net-label">热点名称 (SSID)</div>
+          <div class="net-val">Pi-SmartLab</div>
+        </div>
+        <div class="net-info-item">
+          <div class="net-label">默认连接密码</div>
+          <div class="net-val">raspberry123</div>
+        </div>
+        <div class="net-info-item">
+          <div class="net-label">热点网关 IP</div>
+          <div class="net-val" id="net-ip">192.168.4.1</div>
+        </div>
+        <div class="net-info-item">
+          <div class="net-label">局域网广播域名</div>
+          <div class="net-val">http://pi.local:5000</div>
+        </div>
+        <div class="net-info-item">
+          <div class="net-label">当前接入客户端</div>
+          <div class="net-val" id="net-clients">1 台</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 底部版权 -->
+    <footer>
+      <p>电子科技大学（UESTC）· 智能嵌入式系统课程设计项目组 © 2026</p>
+    </footer>
+
+  </main>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
