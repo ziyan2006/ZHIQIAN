@@ -13,6 +13,9 @@ fi
 PROJECT_DIR=$(cd "$(dirname "$0")/.." && pwd)
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 PYTHON_BIN=$(which python3)
+if [ -x "$PROJECT_DIR/.venv/bin/python" ]; then
+  PYTHON_BIN="$PROJECT_DIR/.venv/bin/python"
+fi
 
 echo "🔍 项目根目录: $PROJECT_DIR"
 echo "🔍 运行用户:   $CURRENT_USER"
@@ -35,6 +38,7 @@ ExecStart=$PYTHON_BIN $PROJECT_DIR/app.py
 Restart=always
 RestartSec=3
 Environment=PYTHONUNBUFFERED=1
+Environment=WEB_HOST=::
 
 [Install]
 WantedBy=multi-user.target

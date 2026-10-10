@@ -5,12 +5,13 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=root
+User=pi
 WorkingDirectory=/home/pi/pi_web_server
-ExecStart=/usr/bin/python3 /home/pi/pi_web_server/app.py
+ExecStart=/home/pi/pi_web_server/.venv/bin/python /home/pi/pi_web_server/app.py
 Restart=always
 RestartSec=3
 Environment=PYTHONUNBUFFERED=1
+Environment=WEB_HOST=::
 
 [Install]
 WantedBy=multi-user.target

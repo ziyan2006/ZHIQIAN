@@ -7,8 +7,13 @@ GPIO/虚拟硬件交互接口以及摄像头实时推流桩。
 import os
 import time
 import threading
+import atexit
+import logging
 from flask import Flask, render_template, jsonify, request, Response
 from system_monitor import get_full_system_status
+from camera_capture import open_camera
+
+logging.basicConfig(level=logging.INFO)
 
 # 导入 MoveNet 轻量人体骨骼识别检测器
 try:
@@ -90,6 +95,11 @@ def api_status():
     """获取系统底层实时指标 (CPU、内存、核心温度、网络、运行时间)"""
     data = get_full_system_status()
     data["devices"] = virtual_devices
+    data["camera"] = {
+        "connected": camera_service.has_real_camera,
+        "backend": camera_service.backend,
+        "rotation": camera_service.rotation,
+    }
     return jsonify(data)
 
 
@@ -290,7 +300,7 @@ class CameraStreamService:
     由于 Linux V4L2 摄像头设备节点在硬件层是排他的，
     本服务以单例后台守护线程持续采集物理摄像头，
     并将处理好 AI 骨骼的 JPEG 广播给所有连接的客户端。
-    支持自动探测 /dev/video0 ~ 2、热插拔自动恢复与防黑屏仿真回退。
+    支持 CSI/Picamera2 与 USB/OpenCV，采集失败时自动重试并回退仿真画面。
     """
     def __init__(self):
         self.cap = None
@@ -298,29 +308,41 @@ class CameraStreamService:
         self.lock = threading.Lock()
         self.running = True
         self.has_real_camera = False
+        self.backend = "simulation"
+        self.requested_backend = os.environ.get("CAMERA_BACKEND", "auto").lower()
+        if self.requested_backend not in {"auto", "csi", "usb"}:
+            raise ValueError("CAMERA_BACKEND must be auto, csi, or usb")
+        self.rotation = int(os.environ.get("CAMERA_ROTATION", "0"))
+        if self.rotation not in {0, 180}:
+            raise ValueError("CAMERA_ROTATION must be 0 or 180")
         self.prev_small_gray = None
         self.static_frame_count = 0
         self.thread = threading.Thread(target=self._capture_loop, daemon=True)
         self.thread.start()
 
     def _open_camera(self):
-        import cv2
-        for idx in [0, 1, 2]:
-            for api in [getattr(cv2, "CAP_V4L2", cv2.CAP_ANY), cv2.CAP_ANY]:
-                try:
-                    c = cv2.VideoCapture(idx, api)
-                    if c.isOpened():
-                        # 640x480 为免驱 USB 摄像头兼容性最高的分辨率
-                        c.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-                        c.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-                        ret, f = c.read()
-                        if ret and f is not None and f.size > 0:
-                            print(f"[CameraService] Successfully opened real camera on index {idx} ({f.shape})")
-                            return c
-                        c.release()
-                except Exception:
-                    pass
-        return None
+        try:
+            return open_camera(self.requested_backend)
+        except Exception:
+            logging.exception("Could not open camera; retrying")
+            return None
+
+    def _release_camera(self):
+        camera, self.cap = self.cap, None
+        if camera is not None:
+            try:
+                camera.release()
+            except Exception:
+                logging.exception("Could not release camera")
+        self.has_real_camera = False
+        self.backend = "simulation"
+        self.prev_small_gray = None
+
+    def stop(self):
+        self.running = False
+        self.thread.join(timeout=7)
+        if not self.thread.is_alive():
+            self._release_camera()
 
     def _capture_loop(self):
         import cv2
@@ -329,6 +351,7 @@ class CameraStreamService:
         while self.running:
             frame_idx += 1
             if self.cap is None or not self.cap.isOpened():
+                self._release_camera()
                 self.cap = self._open_camera()
                 if self.cap is None:
                     # 未检测到物理摄像头，输出雷达仿真帧并等待重试
@@ -339,18 +362,23 @@ class CameraStreamService:
                     time.sleep(0.5)
                     continue
 
-            ret, frame = self.cap.read()
+            try:
+                ret, frame = self.cap.read()
+            except Exception:
+                logging.exception("Camera capture failed; retrying")
+                ret, frame = False, None
             if not ret or frame is None or frame.size == 0:
                 print("[CameraService] Camera read returned empty, releasing for reconnect...")
-                try:
-                    self.cap.release()
-                except Exception:
-                    pass
-                self.cap = None
+                self._release_camera()
                 time.sleep(0.5)
                 continue
 
             self.has_real_camera = True
+            self.backend = self.cap.backend
+
+            # Orient the image before motion detection, pose coordinates and labels.
+            if self.rotation == 180:
+                frame = cv2.rotate(frame, cv2.ROTATE_180)
 
             # 动态帧间差分运动门控 (Motion Gating: 降低画面静止时的 CPU 负荷与温升)
             try:
@@ -395,7 +423,10 @@ class CameraStreamService:
                 with self.lock:
                     self.latest_jpeg = buffer.tobytes()
 
-            time.sleep(0.035)  # ~25-30 FPS 刷新
+            # CSI capture already waits for the next frame at the configured 30 FPS.
+            if self.backend == "usb":
+                time.sleep(0.035)
+        self._release_camera()
 
     def get_frame(self):
         with self.lock:
@@ -403,6 +434,7 @@ class CameraStreamService:
 
 
 camera_service = CameraStreamService()
+atexit.register(camera_service.stop)
 
 
 def generate_camera_frames():
@@ -437,4 +469,4 @@ if __name__ == "__main__":
     print("[*] Local URL:   http://127.0.0.1:5000")
     print("[*] Hotspot URL: http://192.168.4.1:5000 or http://pi.local:5000")
     print("============================================================")
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host=os.environ.get("WEB_HOST", "0.0.0.0"), port=5000, debug=False)

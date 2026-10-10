@@ -94,7 +94,8 @@ flowchart TD
 │   ├── app.py                            # Flask 主服务、单例推流管理与 REST API
 │   ├── pose_detector.py                  # YOLOv8-pose ONNX + LK 稀疏光流 + EMA 平滑引擎
 │   ├── system_monitor.py                 # 底层硬件指标采集器 (SoC 温度/CPU/内存/磁盘/网络)
-│   ├── requirements.txt                  # 最小依赖文件 (仅 flask, psutil, opencv-python)
+│   ├── camera_capture.py                  # CSI/Picamera2 与 USB/OpenCV 采集适配
+│   ├── requirements.txt                  # Flask、psutil、NumPy、OpenCV headless
 │   ├── models/                           # 预训练神经网络权重
 │   │   ├── yolov8n-pose-256.onnx         # 256x256 高速黄金分辨率模型 (12.7 MB, 推荐)
 │   │   └── yolov8n-pose.onnx             # 640x640 官方基线模型 (12.8 MB)
@@ -107,8 +108,9 @@ flowchart TD
 │   │   ├── setup_hotspot.sh              # 树莓派一键开启独立 AP 热点 (nmcli/hostapd 兼容)
 │   │   ├── install_service.sh            # 一键注册 systemd 守护进程 (开机自启)
 │   │   └── pi-web.service                # systemd 服务描述文件
-│   └── tests/                            # 自动化测试套件
-│       └── test_server.py                # 11 项单元与端到端集成测试 (100% 通过)
+│   └── tests/                            # 19 项自动化测试
+│       ├── test_server.py                # 状态采集、REST API 与光流追踪
+│       └── test_camera_capture.py        # 摄像头选择、异常恢复与画面旋转
 ├── sync_final.py                         # Windows ➔ 树莓派自动化增量同步与热重启工具
 ├── grab_pi_snap.py                       # 树莓派远程抓帧与验证工具
 ├── test_person.jpg                       # 标准测试基准人体图像
@@ -135,10 +137,10 @@ flowchart TD
 cd pi_web_server
 
 # 2. 安装基础依赖 (轻量无负担)
-pip install -r requirements.txt opencv-python
+pip install -r requirements.txt
 
 # 3. 运行自动化单元测试
-python tests/test_server.py
+python -m unittest discover -s tests
 
 # 4. 启动本地服务
 python app.py
@@ -153,7 +155,40 @@ python app.py
 
 ---
 
-### 第二步：一键同步与部署至树莓派 3B+
+### 第二步：部署至树莓派
+
+树莓派 5 的 CSI 摄像头使用 Picamera2 采集，输出 BGR 图像交给 OpenCV 做姿态识别和 JPEG 编码。默认 `CAMERA_BACKEND=auto` 优先选择 CSI，没有可用 CSI 摄像头时尝试 USB；也可设为 `csi` 或 `usb` 指定来源。USB 摄像头支持热插拔重连；CSI 排线应在断电后插拔。
+
+IMX219 使用 1640×1232 全视野传感器模式，再缩小为 640×480 输出，避免低分辨率传感器模式只读取中央区域。网页以 4:3 窗口完整显示画面，不额外裁剪；其他比例的画面保留黑边。
+
+在 Raspberry Pi OS Bookworm 上，先安装系统摄像头库，再创建可访问系统包的独立环境：
+
+```bash
+sudo apt install python3-venv python3-picamera2 python3-numpy python3-psutil
+cd /home/pi/pi_web_server
+python3 -m venv --system-site-packages .venv
+.venv/bin/python -m pip install -r requirements.txt
+```
+
+项目使用虚拟环境内的 OpenCV 4.10 运行 YOLO 模型。只安装 requirements 中的 headless 版本，避免在此环境中混装其他 OpenCV wheel。Picamera2 和 libcamera 使用系统包。
+
+IMX219 接在树莓派 5 的 CAM/DISP 0、且自动检测未识别第三方模块时，备份 `/boot/firmware/config.txt`，只保留对应的摄像头配置，然后重启：
+
+```ini
+camera_auto_detect=0
+dtoverlay=imx219,cam0
+```
+
+用 `rpicam-hello --list-cameras` 确认识别后，执行 `sudo bash scripts/install_service.sh`。安装脚本优先使用 `.venv/bin/python`，并启用 IPv4/IPv6 访问。`GET /api/status` 的 `camera.connected` 和 `camera.backend` 可区分真实 CSI/USB 画面与仿真回退。
+
+配置依据：[树莓派摄像头文档](https://www.raspberrypi.com/documentation/computers/camera_software.html#configuration)、[Picamera2 手册](https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf)。
+
+摄像头支架倒装时，可设置 `CAMERA_ROTATION=180`（默认 `0`）。旋转在运动检测、姿态识别与 JPEG 编码之前执行，因此骨架坐标和画面保持一致。持久配置可用 `sudo systemctl edit pi-web.service` 写入以下内容，然后执行 `sudo systemctl restart pi-web.service`：
+
+```ini
+[Service]
+Environment=CAMERA_ROTATION=180
+```
 
 若电脑与树莓派通过网线直连，可直接使用工程自带的同步脚本：
 
